@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Billett bestillings nettside for kino</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #antallFeil, #ikkeValgt, #ingenFornavn, #ingenEtternavn, #ingenTlfnr, #ingenEpost{
+            color: red;
+        }
+    </style>
+    <script type="application/javascript">
+        let ut;
+        let inn = 0;
+        let billetter = [];
+        function kjøp(){
+            let bestill;
+            let antall = $("#antall").val();
+            let film = $("#velgFilm").val();
+            let fornavn = $("#fornavn").val();
+            let etternavn = $("#etternavn").val();
+            let tlfnr = $("#tlfnr").val();
+            let epost = $("#epost").val();
+            let verifisering = [];
+            verifisering.fill(0);
+
+            if(antall <= 0||!antall.split("").every(char => /^\d+$/.test(char))){
+                $("#antallFeil").html("Antall må være et tall større enn 0");
+                verifisering.push(1);
+            }else{
+                $("#antallFeil").html("");
+                verifisering.push(0);
+            }
+            if(film ==  "Velg Film"){
+                $("#ikkeValgt").html("Du må velge en film");
+                verifisering.push(1);
+            }else{
+                $("#ikkeValgt").html("");
+                verifisering.push(0);
+            }
+            if(fornavn == ""){
+                $("#ingenFornavn").html("Du må skrive inn fornavn");
+                verifisering.push(1);
+            }
+            else{
+                $("#ingenFornavn").html("");
+                verifisering.push(0);
+            }
+            if(etternavn == ""){
+                $("#ingenEtternavn").html("Du må skrive inn etternavn");
+                verifisering.push(1);
+            }
+            else{
+                $("#ingenEtternavn").html("");
+                verifisering.push(0);
+            }
+            if(tlfnr.length !== 8||!tlfnr.split("").every(char => /^\d+$/.test(char))){
+                $("#ingenTlfnr").html("Du må skrive et gyldig telefonnummer");
+                verifisering.push(1);
+            }else{
+                $("#ingenTlfnr").html("");
+                verifisering.push(0);
+            }
+            if(!/[a-z]/.test(epost)||!/[@]/.test(epost)||!/[.]/.test(epost)){
+                $("#ingenEpost").html("Du må skrive en gyldig epost");
+                verifisering.push(1);
+            }
+            else{
+                $("#ingenEpost").html("");
+                verifisering.push(0);
+            }
+
+            for(i = 0; i < antall; i++){
+                bestill = {
+                    film: film,
+                    antall: i + 1,
+                    fornavn: fornavn,
+                    etternavn: etternavn,
+                    tlfnr: tlfnr,
+                    epost: epost
+                };
+                billetter.push(bestill);
+            }
+            let verifiser;
+            for(verifiser of verifisering){
+                if(verifiser === 1){
+                    break;
+                }
+            }
+            if(verifiser === 0) {
+                if(inn === 0) {
+                    ut = "<table><tr>" +
+                        "<th>Film</th>" +
+                        "<th>antall</th>" +
+                        "<th>fornavn</th>" +
+                        "<th>etternavn</th>" +
+                        "<th>tlfnr</th>" +
+                        "<th>epost</th>" +
+                        "</tr>";
+                    inn++;
+                }
+                let billett = billetter[billetter.length-1];
+                ut += "<tr>";
+                ut += "<td>" + billett.film + "</td><td>" + billett.antall + "</td><td>" + billett.fornavn + "</td>" +
+                    "<td>" + billett.etternavn + "</td><td>" + billett.tlfnr + "</td><td>" + billett.epost + "</td>";
+                ut += "</tr>";
+                $("#bestillt").html(ut);
+            }
+            let textboxes = document.querySelectorAll("input[type='text']");
+            for (let textbox of textboxes) {
+                textbox.value = "";
+            }
+        }
+        function slett(){
+            ut = null;
+            $("#bestillt").html(ut);
+            billetter = [];
+            inn = 0;
+        }
+    </script>
+</head>
+<body>
+<table>
+    <tr><td><h1>Bestilling av kinobilletter</h1></td></tr>
+    <tr><td>Velg Film:</td>
+        <td><select id="velgFilm">
+            <option>Velg Film</option>
+            <option>Barbie</option>
+            <option>Oppenheimer</option>
+            <option>The Creator</option>
+        </select></td><td><div id="ikkeValgt"></div></td></tr>
+    <tr><td>Antall:</td><td><input type="text" id="antall"></td><td><div id="antallFeil"></div></td></tr>
+    <tr><td>Fornavn:</td><td><input type="text" id="fornavn"></td><td><div id="ingenFornavn"></div></td></tr>
+    <tr><td>Etternavn:</td><td><input type="text" id="etternavn"></td><td><div id="ingenEtternavn"></div></td></tr>
+    <tr><td>Telefonnr</td><td><input type="text" id="tlfnr"></td><td><div id="ingenTlfnr"></div></td></tr>
+    <tr><td>Epost</td><td><input type="text" id="epost"></td><td><div id="ingenEpost"></div></td></tr>
+    <tr><td><button onclick="kjøp()">Kjøp billett</button></td></tr>
+    <tr><td><h2>Alle Billetter</h2></td></tr>
+    <tr><td><div id="bestillt"></div></td></tr>
+    <tr><td><button onclick="slett()">Slett Alle Billetter</button></td></tr>
+</table>
+
+</body>
+</html>
